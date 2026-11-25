@@ -3,6 +3,8 @@
 **A field service and Annual Maintenance Contract (AMC) management
 platform.**
 
+> 📊 **For the 8-page presentation, [click here and download](ServiceIQ.pdf).**
+
 ServiceIQ is designed for organisations that maintain and service
 equipment such as air-conditioning systems, lifts, generators,
 fire-safety systems and appliances. It brings customer complaints,
