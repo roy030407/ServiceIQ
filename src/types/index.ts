@@ -246,3 +246,27 @@ export interface Job {
   job_assignment?: JobAssignment[] | null;
 }
 
+
+// Track E: Spare parts catalogue
+export interface Part {
+  part_id: string;
+  org_id: string;
+  part_no?: string | null;
+  name: string;
+  uom: string;
+  sell_price: number;
+}
+
+// Track E: Contract renewal pipeline
+export interface RenewalPipelineItem {
+  org_id: string;
+  contract_id: string;
+  contract_no: string;
+  valid_to: string;
+  annual_value: number;
+  status: string;
+  customer_name: string;
+  customer_phone?: string | null;
+  days_until_expiry: number;
+  equipment_count: number;
+}

@@ -69,3 +69,55 @@ export async function notifyTechnicianAssigned(payload: TechnicianAssignmentNoti
     return { success: false, error: error?.message };
   }
 }
+
+// Track E: WhatsApp Cloud API helpers
+const getWhatsAppMessagesUrl = () =>
+  `https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_ID}/messages`;
+
+export function normalizePhone(to: string): string {
+  return to.replace(/\D/g, '').replace(/^0/, '91').replace(/^(?!91)/, '91');
+}
+
+export async function sendText(to: string, text: string): Promise<boolean> {
+  const token = process.env.WHATSAPP_TOKEN;
+  const phoneId = process.env.WHATSAPP_PHONE_ID;
+
+  if (!token || !phoneId) {
+    console.warn('[WhatsApp] Credentials are not configured. Message skipped.');
+    return false;
+  }
+
+  const phone = normalizePhone(to);
+
+  if (!phone || phone === '91') {
+    console.warn('[WhatsApp] Invalid recipient phone number.');
+    return false;
+  }
+
+  try {
+    const response = await fetch(getWhatsAppMessagesUrl(), {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: phone,
+        type: 'text',
+        text: { body: text },
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error(`[WhatsApp] API error ${response.status}: ${error}`);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('[WhatsApp] Network error:', error);
+    return false;
+  }
+}
