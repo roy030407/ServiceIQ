@@ -1,4 +1,4 @@
-export type UserRole = 'owner' | 'dispatcher' | 'technician' | 'accounts';
+﻿export type UserRole = 'owner' | 'dispatcher' | 'technician' | 'accounts';
 export type OrgType = 'retailer' | 'wholesaler' | 'service_centre' | 'brand' | 'facility';
 export type JobStatus =
   | 'open'
@@ -270,3 +270,11 @@ export interface RenewalPipelineItem {
   days_until_expiry: number;
   equipment_count: number;
 }
+
+export interface Holiday {
+  holiday_id: string;
+  org_id: string;
+  holiday_date: string;
+  name: string | null;
+}
+
