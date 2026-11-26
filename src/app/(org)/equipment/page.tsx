@@ -113,8 +113,8 @@ export default async function EquipmentPage() {
           status,
           product_model (
             name,
-            model_no,
-            brand_id
+            model_code,
+            brand_name
           ),
           site (
             name
@@ -128,7 +128,7 @@ export default async function EquipmentPage() {
           model_name: u.product_model?.name || 'General Equipment',
           serial_no: u.serial_no || 'SN-UNKNOWN',
           category: 'Equipment',
-          brand: 'Verified Brand',
+          brand: u.product_model?.brand_name || 'Verified Brand',
           site_name: u.site?.name || 'HQ Facility',
           customer_name: 'Client Account',
           installed_on: u.installed_on || '2025-01-01',

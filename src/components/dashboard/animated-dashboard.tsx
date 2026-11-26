@@ -92,6 +92,22 @@ export function AnimatedDashboard({
   const [simStatus, setSimStatus] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
 
+  // Dynamically computed operational health metrics
+  const totalRelevantTickets = Math.max(stats.openTickets + stats.jobsInProgress, stats.slaBreaches);
+  const slaCompliancePct = totalRelevantTickets > 0
+    ? Math.max(0, Math.min(100, Math.round(((totalRelevantTickets - stats.slaBreaches) / totalRelevantTickets) * 1000) / 10))
+    : 92.8;
+
+  const totalPmVisits = Math.max(stats.pmVisitsDueThisMonth, overduePMs.length);
+  const pmCompletionPct = totalPmVisits > 0
+    ? Math.max(0, Math.min(100, Math.round(((totalPmVisits - overduePMs.length) / totalPmVisits) * 1000) / 10))
+    : 84.5;
+
+  const totalRenewalVal = renewals.reduce((sum, r) => sum + (r.annual_value || 0), 0);
+  const renewalHealthPct = totalRenewalVal > 0
+    ? Math.max(0, Math.min(100, Math.round(((totalRenewalVal - stats.revenueAtRisk) / totalRenewalVal) * 1000) / 10))
+    : 88.0;
+
   // Trigger fn_daily_checks() simulator
   const handleRunHousekeeping = async () => {
     setIsRunningCron(true);
@@ -422,7 +438,7 @@ export function AnimatedDashboard({
               </div>
               <div className="flex items-center gap-1.5 mt-2 text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
                 <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                96% satisfaction rate
+                {Math.round((stats.avgRating / 5) * 100)}% satisfaction rate
               </div>
             </CardContent>
           </Card>
@@ -437,12 +453,12 @@ export function AnimatedDashboard({
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 SLA Compliance Rate
               </span>
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">92.8%</span>
+              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{slaCompliancePct}%</span>
             </div>
             <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: '92.8%' }}
+                animate={{ width: `${slaCompliancePct}%` }}
                 transition={{ duration: 1, ease: 'easeOut' }}
                 className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full"
               />
@@ -459,12 +475,12 @@ export function AnimatedDashboard({
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 PM Completion Pace
               </span>
-              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">84.5%</span>
+              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{pmCompletionPct}%</span>
             </div>
             <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: '84.5%' }}
+                animate={{ width: `${pmCompletionPct}%` }}
                 transition={{ duration: 1, ease: 'easeOut', delay: 0.1 }}
                 className="bg-gradient-to-r from-blue-600 to-indigo-500 h-full rounded-full"
               />
@@ -481,12 +497,12 @@ export function AnimatedDashboard({
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Contract Renewal Health
               </span>
-              <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">88.0%</span>
+              <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">{renewalHealthPct}%</span>
             </div>
             <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: '88%' }}
+                animate={{ width: `${renewalHealthPct}%` }}
                 transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
                 className="bg-gradient-to-r from-indigo-500 to-violet-500 h-full rounded-full"
               />

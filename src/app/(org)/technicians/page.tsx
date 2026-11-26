@@ -1,14 +1,8 @@
 import React from 'react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/server';
-import {
-  Users,
-  Star,
-  Phone,
-  MapPin,
-  Search,
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { TechniciansClient, TechnicianItem } from './technicians-client';
 
 export const revalidate = 0;
 
@@ -16,19 +10,7 @@ export default async function TechniciansPage() {
   const supabase = createClient();
 
   // Demo fallback list
-  let technicians: Array<{
-    person_id: string;
-    full_name: string;
-    phone: string;
-    base_city: string;
-    emp_code: string;
-    is_active: boolean;
-    skills: Array<{ name: string; level: string }>;
-    avg_rating: number | null;
-    jobs_assigned: number;
-    jobs_completed: number;
-    sla_breaches: number;
-  }> = [
+  let technicians: TechnicianItem[] = [
     {
       person_id: 'tech-1',
       full_name: 'Lead Specialist A',
@@ -173,106 +155,8 @@ export default async function TechniciansPage() {
         </div>
       </div>
 
-      {/* Main Table Card */}
-      <Card className="shadow-xs border border-slate-200 dark:border-slate-800">
-        <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">Performance & Capabilities</CardTitle>
-            <CardDescription className="text-xs text-slate-500 dark:text-slate-400">
-              Verified field metrics and customer ratings
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-1.5 w-64 text-xs">
-            <Search className="w-3.5 h-3.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Filter by name, skill, or city..."
-              className="bg-transparent border-none outline-none text-slate-900 dark:text-white w-full placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs"
-            />
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
-                <tr>
-                  <th className="py-3 px-4">Technician</th>
-                  <th className="py-3 px-4">Contact & Base</th>
-                  <th className="py-3 px-4">Skills & Certifications</th>
-                  <th className="py-3 px-4 text-center">Avg Rating</th>
-                  <th className="py-3 px-4 text-center">Completed / Assigned</th>
-                  <th className="py-3 px-4 text-center">SLA Breaches</th>
-                  <th className="py-3 px-4 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {technicians.map((t) => (
-                  <tr key={t.person_id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-slate-900 dark:text-white">{t.full_name}</div>
-                      <div className="text-[11px] text-slate-400 font-mono">{t.emp_code}</div>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
-                      <div className="flex items-center gap-1.5">
-                        <Phone className="w-3 h-3 text-slate-400" />
-                        <span>{t.phone}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-slate-400 mt-0.5 text-[11px]">
-                        <MapPin className="w-3 h-3" />
-                        <span>{t.base_city}</span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex flex-wrap gap-1 max-w-xs">
-                        {t.skills.map((s, idx) => (
-                          <Badge
-                            key={idx}
-                            variant="secondary"
-                            className="text-[10px] px-2 py-0 font-normal"
-                          >
-                            {s.name} ({s.level})
-                          </Badge>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-center font-bold text-slate-900 dark:text-white">
-                      {t.avg_rating ? (
-                        <span className="inline-flex items-center gap-1 text-slate-800 dark:text-slate-200">
-                          <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                          {t.avg_rating}
-                        </span>
-                      ) : (
-                        <span className="text-slate-400 font-normal text-[11px]">N/A</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="font-semibold text-slate-900 dark:text-white">{t.jobs_completed}</span>
-                      <span className="text-slate-400 text-[11px]"> / {t.jobs_assigned}</span>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      {t.sla_breaches > 0 ? (
-                        <Badge variant="destructive" className="text-[10px] px-2 py-0">
-                          {t.sla_breaches}
-                        </Badge>
-                      ) : (
-                        <Badge variant="success" className="text-[10px] px-2 py-0">
-                          0
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <Badge variant="success" className="text-[10px] font-medium">
-                        Available
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Main Table Card with interactive search & filters */}
+      <TechniciansClient initialTechnicians={technicians} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { sendText } from '@/lib/whatsapp';
 
@@ -18,7 +19,25 @@ export async function GET(req: NextRequest) {
 // POST: Incoming WhatsApp messages
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+
+    // Verify Meta X-Hub-Signature-256 if WHATSAPP_APP_SECRET is set
+    const appSecret = process.env.WHATSAPP_APP_SECRET;
+    const signature = req.headers.get('x-hub-signature-256');
+
+    if (appSecret && signature) {
+      const expectedSignature = `sha256=${crypto
+        .createHmac('sha256', appSecret)
+        .update(rawBody)
+        .digest('hex')}`;
+
+      if (signature !== expectedSignature) {
+        console.warn('WhatsApp webhook signature verification failed.');
+        return new NextResponse('Invalid signature', { status: 403 });
+      }
+    }
+
+    const body = JSON.parse(rawBody || '{}');
     const supabase = createAdminClient(); // Service role client to bypass RLS for webhook creation
 
     const entry = body.entry?.[0];
@@ -35,6 +54,9 @@ export async function POST(req: NextRequest) {
     if (!text) {
       return NextResponse.json({ ok: true });
     }
+
+    // Limit incoming text length to avoid denial of service or payload bloat
+    const sanitizedText = text.slice(0, 2000);
 
     // Match phone number by last 10 digits
     const cleanDigits = from.replace(/\D/g, '');
@@ -67,6 +89,10 @@ export async function POST(req: NextRequest) {
       .limit(1)
       .maybeSingle();
 
+    // Generate fallback tokens if DB trigger is absent
+    const generatedToken = crypto.randomUUID();
+    const fallbackTicketNo = `TKT-${Math.floor(10000 + Math.random() * 90000)}`;
+
     // Create a ticket from the WhatsApp message
     const { data: ticket, error: ticketErr } = await supabase
       .from('ticket')
@@ -74,8 +100,10 @@ export async function POST(req: NextRequest) {
         org_id: party.org_id,
         site_id: site?.site_id || null,
         source: 'whatsapp',
-        fault_description: text,
+        fault_description: sanitizedText,
         priority: 'P2',
+        ticket_no: fallbackTicketNo,
+        public_token: generatedToken,
       })
       .select('ticket_no, public_token')
       .single();

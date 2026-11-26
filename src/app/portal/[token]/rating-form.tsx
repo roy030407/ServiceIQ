@@ -80,7 +80,7 @@ export function RatingForm({ token }: { token: string }) {
           </button>
         ))}
         <span className="ml-3 text-xs font-semibold text-slate-700 dark:text-slate-300">
-          {rating === 5 ? 'Excellent' : rating === 4 ? 'Good' : rating === 3 ? 'Average' : 'Needs Improvement'}
+          {rating === 5 ? 'Excellent' : rating === 4 ? 'Good' : rating === 3 ? 'Average' : rating === 2 ? 'Poor' : 'Very Poor'}
         </span>
       </div>
 
@@ -92,6 +92,7 @@ export function RatingForm({ token }: { token: string }) {
         <textarea
           id="feedback"
           rows={3}
+          maxLength={1000}
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
           placeholder="Technician arrived on time, resolved the issue quickly..."

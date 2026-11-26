@@ -18,7 +18,7 @@ export default async function SettingsPage() {
       ? process.env.WHATSAPP_PHONE_ID
       : '',
     verifyToken: process.env.WHATSAPP_VERIFY_TOKEN && process.env.WHATSAPP_VERIFY_TOKEN !== 'your-webhook-verify-token'
-      ? process.env.WHATSAPP_VERIFY_TOKEN
+      ? '••••••••••••••••'
       : '',
     appUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   };

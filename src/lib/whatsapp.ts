@@ -75,7 +75,14 @@ const getWhatsAppMessagesUrl = () =>
   `https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_ID}/messages`;
 
 export function normalizePhone(to: string): string {
-  return to.replace(/\D/g, '').replace(/^0/, '91').replace(/^(?!91)/, '91');
+  const digits = to.replace(/\D/g, '');
+  if (digits.length === 10) {
+    return `91${digits}`;
+  }
+  if (digits.length === 11 && digits.startsWith('0')) {
+    return `91${digits.slice(1)}`;
+  }
+  return digits;
 }
 
 export async function sendText(to: string, text: string): Promise<boolean> {

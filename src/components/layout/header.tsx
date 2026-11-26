@@ -191,7 +191,7 @@ export function Header() {
 
           {/* Notification Dropdown Drawer */}
           {showNotifications && (
-            <div className="absolute right-0 mt-2.5 w-84 sm:w-96 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-black/5 dark:ring-white/5">
+            <div className="absolute right-0 mt-2.5 w-80 sm:w-96 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150 ring-1 ring-black/5 dark:ring-white/5">
               {/* Header */}
               <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/95">
                 <div className="flex items-center justify-between">
@@ -281,7 +281,7 @@ export function Header() {
                     <div
                       key={n.id}
                       onClick={() => markAsRead(n.id)}
-                      className={`p-3.5 hover:bg-slate-50 dark:hover:bg-slate-850/60 dark:hover:bg-slate-800/50 transition-colors cursor-pointer flex items-start gap-3 relative group ${
+                      className={`p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer flex items-start gap-3 relative group ${
                         n.unread ? 'bg-blue-50/40 dark:bg-blue-950/25' : ''
                       }`}
                     >

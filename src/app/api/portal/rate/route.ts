@@ -55,11 +55,23 @@ export async function POST(req: NextRequest) {
     // Update the most relevant job (first or latest)
     const targetJob = jobs[0];
 
+    // Prevent duplicate rating overwrite
+    if (targetJob.customer_rating) {
+      return NextResponse.json(
+        { error: 'Rating has already been submitted for this service job.' },
+        { status: 409 }
+      );
+    }
+
+    const sanitizedFeedback = typeof feedback === 'string' && feedback.trim().length > 0
+      ? feedback.trim().slice(0, 1000)
+      : null;
+
     const { error: updateError } = await supabase
       .from('job')
       .update({
         customer_rating: rating,
-        customer_feedback: feedback || null,
+        customer_feedback: sanitizedFeedback,
       })
       .eq('job_id', targetJob.job_id);
 
